@@ -14,7 +14,9 @@
 2. Per-base NT distribution
     1. Use markdown to insert your 4 histograms here.
     2. ![Index 1](https://github.com/pgenge/Demultiplex/blob/master/Assignment-the-first/index1_quality.png)
-    3. **YOUR ANSWER HERE*
+    3. ![Index 2](https://github.com/pgenge/Demultiplex/blob/master/Assignment-the-first/index2_quality.png)
+    4. ![Read 1](https://github.com/pgenge/Demultiplex/blob/master/Assignment-the-first/read1_quality.png)
+    5. ![Read 2](https://github.com/pgenge/Demultiplex/blob/master/Assignment-the-first/read2_quality.png)
     
 ## Part 2
 1. Define the problem
