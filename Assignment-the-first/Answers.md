@@ -89,6 +89,7 @@ def qual_score(phred_score: str) -> float:
         sum += convert_phred(x)
     return sum/len(phred_score)
 
-
-EA# 
+Test Example
+EA#
+qual_score(EA#) == 21
 ```
