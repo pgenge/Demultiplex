@@ -13,7 +13,7 @@
 
 2. Per-base NT distribution
     1. Use markdown to insert your 4 histograms here.
-    2. **YOUR ANSWER HERE**
+    2. ![Index 1](https://github.com/pgenge/Demultiplex/blob/master/Assignment-the-first/index1_quality.png)
     3. **YOUR ANSWER HERE*
     
 ## Part 2
@@ -70,7 +70,7 @@ for nth record (meaning every record in file):
 
     4. Return statement
 ```
-def convert_phred(letter):
+def convert_phred(letter: str) -> int:
     """Converts a single character into a phred score"""
     return ord(letter)-33
 
@@ -80,7 +80,7 @@ A = 28
 # = 2
 convert_phred(E) == 33 etc.. 
 
-def qual_score(phred_score):
+def qual_score(phred_score: str) -> float:
     """This function calculates the average quality score of the whole phred string"""
     sum = 0
     for x in phred_score:
