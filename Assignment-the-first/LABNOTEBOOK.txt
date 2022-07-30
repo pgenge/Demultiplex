@@ -1,0 +1,110 @@
+#LAB NOTEBOOK DEMUX PART 1
+
+file path R1: /gpfs/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz
+file path R2: /gpfs/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz
+file path R3: /gpfs/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz
+file path R4: /gpfs/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R4_001.fastq.gz
+
+Initial Data Exploration (bash commands)
+
+#look at the files
+zcat /gpfs/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz| head
+
+#this is what R1 looks like
+@K00337:83:HJKJNBBXX:8:1101:1265:1191 1:N:0:1
+GNCTGGCATTCCCAGAGACATCAGTACCCAGTTGGTTCAGACAGTTCCTCTATTGGTTGACAAGGTCTTCATTTCTAGTGATATCAACACGGTGTCTACAA
++
+A#A-<FJJJ<JJJJJJJJJJJJJJJJJFJJJJFFJJFJJJAJJJJ-AJJJJJJJFFJJJJJJFFA-7<AJJJFFAJJJJJF<F--JJJJJJF-A-F7JJJJ
+@K00337:83:HJKJNBBXX:8:1101:1286:1191 1:N:0:1
+CNACCTGTCCCCAGCTCACAGGACAGCACACCAAAGGCGGCAACCCACACCCAGTTTTACAGCCACACAGTGCCTTGTTTTACTTGAGGACCCCCCACTCC
++
+A#AAFJJJJJJJJJJFJJJJJJJJJJJJJJJJJJJJJJJJFJJJJJJJJJJJJJJAJJJJJJJJJJJJJJFJJJJJFFFFJJJJJJJJJJJJJJJJJJ77F
+@K00337:83:HJKJNBBXX:8:1101:1347:1191 1:N:0:1
+GNGGTCTTCTACCTTTCTCTTCTTTTTTGGAGGAGTAGAATGTTGAGAGTCAGCAGTAGCCTCATCATCACTAGATGGCATTTCTTCTGAGCAAAACAGGT
+
+#get read lengths of each file
+zcat /gpfs/projects/bgmp/shared/2017_sequencing/1294_S1_L008_R* | awk '{if(NR%4==2) print length($1)}' | sort -n | uniq -c
+
+#use this to open and read gzipped files
+gzip.open(file,"rt") --> "read as text"
+
+#python code for part1
+ran into issue bc of shebang--was not recognizing matplotlib or function type calling
+#!/usr/bin/env python USE THIS
+
+numpy doesn't work takes too much memory--work off code from PS4
+
+#shell script for part1
+need to write a wrapper for slurm script to run python code
+
+
+PART 2:
+
+How to think about it 
+
+We have 4 files: R1, R2, R3, R4
+We need to separate our reads based on the criteria.
+Our problem is that some index sequences in R2/R3 contain low quality base calls, 
+some unknown base calls (N), and some index1-index2 index matches for each record do not exist (index hopping has occurred). We want to report high quality data 
+and to do so we have to pull out all of these things and only report what meets our criteria of high quality index reads (Q>/=30), 
+matched to our known indexes/don't contain unknown basecalls, and index pairs match each other.
+So our questions for pseudocode are:
+Does the index match our known 24 index sequences?
+    Does the index contain an N?
+Is each base in the index seqeuence above our cutoff of Q>/=30?
+Does the reverse complement of index 2 match 24 known indexes?
+Does the reverse complement of index 2 match index 1 for each corresponding record? 
+
+
+we decided to throw away all index reads that have one base \
+with bad qscore because all of our reads at more bases have a high qscore around 30; but this might change
+
+put them in files:
+R1 matched
+R2 matched
+R1 Unmatched
+R2 Unmatched
+R1 Unknown
+R2 Unknown
+
+#Pseudocode and Planning
+Make 1 sets:
+1 with forward seqeuence
+
+write a function to do reverse complement
+
+Open all 4 fastq files & read in parallel
+for nth record (meaning every record in file): 
+        check if index 1 in set
+            if NOT in set
+                write R1/R4 record to unknown files R1_unknown R2_unknown
+            if index 1 IS IN set
+                check if revcomp(index 2) is also in set
+                    if NOT send to unknown files corresponding to read
+                    if index 2 is in set
+                        check line 4 of R2/R3 records for quality score of index for Q>/=30
+                            if below cutoff write to unknown files corresponding to read
+                            if Q>30 then:
+                                check if index 1 matches revcomp(index 2)
+                                    if it's a match
+                                        send R1/R4 record to matched files R1_matched R2_matched
+                                    if NOT matched
+                                        write R1/R4 record to unmatched files R1_unmatched R2_unmatched
+                                            each time you a write out a record append index1_revcomp(index2) to each header
+
+
+we decided to throw away all index reads that have one base \
+with bad qscore because all of our reads at more bases have a high qscore around 30; but this might change
+
+how to write out each lines
+create an array of these records??
+
+dictionary??
+if index 1 is the key then is index 2 the value
+
+have to reverse complement the index 2
+
+DO NOT LOOKUP VALUES in DICT takes tooooo long
+
+
+WRITE Test cases for 4 read files, and each output will go into R1 R2 files
