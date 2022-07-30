@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-
+#import libs
 import bioinfo
 import numpy as np
 import gzip
@@ -8,8 +8,7 @@ import argparse
 import matplotlib.pyplot as plt
 
 
-#Test Files
-
+#argparse for calling options
 
 def get_args():
     parser = argparse.ArgumentParser(description="get distribution of phred scores")
@@ -39,7 +38,7 @@ def populate_list(file):
             linecount += 1    #increment 1 each time    
     return (qual_scores, linecount)
 
-#call populate_list and past it a file
+#call populate_list and pass it a file
 qual_scores, num_lines = populate_list(args.file)
 num_records = num_lines/4
 
@@ -47,7 +46,7 @@ num_records = num_lines/4
 for i, x in enumerate(qual_scores): #keep track of count, each value in the count pass my_list
    qual_scores[i] = x/num_records #get average for each position
 
-
+#plot and save as png
 
 x = range(0, args.readlength)
 y = qual_scores
