@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --partition=bgmp
 #SBATCH --job-name=indexes
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=4
 #SBATCH --account=bgmp 
 #SBATCH --time=0-24:00:00
 
