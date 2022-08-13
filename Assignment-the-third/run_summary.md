@@ -1,3 +1,4 @@
+OVERALL RUN SUMMARY
 ```
 Total Number of Reads:363246735
 Total Number of Dual Matched Reads: 304980270 
@@ -12,7 +13,7 @@ Percent of Unmatched Reads: 0.1424959814160477%
 ![Number of Reads per Dual-Matched Index](https://github.com/pgenge/Demultiplex/blob/ba2b8f24aa423f85600ff9be0b031c5a61672703/Assignment-the-third/frequency_of_dual-matched_indexes.png)
 
 
-
+SUMMARY OF TRUE DUAL-MATCHED INDEX READS PER INDEX SEQ
 ```
 Index_Seq	Number_of_Reads	Percentage_of_Total_Reads
 TACCGGAT	69307073	19.079888770369816%
@@ -40,6 +41,7 @@ GTCCTAAG	8164223	2.2475695480098397%
 GATCAAGG	6085915	1.6754218038601227%
 TCGGATTC	4163314	1.146139414026667%
 ```
+SUMMARY OF INDEX HOPPING EVENTS
 ```
 Index_Seq_Hopped	Number_of_Reads	Percentage_of_Total_Reads
 TATGGCAC_TGTTCCGT	82265	0.022647140930255025%
