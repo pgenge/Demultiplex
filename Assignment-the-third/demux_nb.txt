@@ -1,0 +1,151 @@
+## = notes after I started actually coding
+
+Building Test Files
+
+Need all of these cases: 
+INDEX MATCH-GOOD QUALITY
+INDEX MATCH2-GOOD QUALITY
+INDEX MATCH1-INDEX2-REVCOMP UNKNOWN
+INDEX MATCH2-INDEX1 UNKNOWN
+BOTH INDEXES UNKNOWN
+INDEX1 CONTAINS N-INDEX2 KNOWN
+INDEX1 KNOWN-INDEX2 CONTAINS N
+BOTH INDEXES CONTAIN N
+INDEX READS LOW QUALITY-AVERAGE = 29
+INDEX1 LOW QUALITY #-2
+INDEX2 LOW QUALITY #-2
+INDEX1 MATCH-INDEX2 HOPPED
+INDEX1 HOPPED-INDEX2 MATCH
+
+This should(hopefully) capture all of the possible cases--could do additional parameter to filter
+out the low quality matched reads if needed
+
+you need 4 files (r1, r2, r3, r4) and a known index file **these need to be gzipped to test code
+
+here are paths to my test files:
+file path to test files: 
+/projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-first/R1.fq
+/projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-first/R2.fq
+/projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-first/R3.fq
+/projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-first/R4.fq
+
+test command: ./demux.py R1.fq.gz R2.fq.gz R3.fq.gz R4.fq.gz indextest.txt
+
+versions used:
+
+bioinfo - 0.8
+numpy - 1.22.3
+matplotlib.pyplot - 3.5.1
+
+python version 3.10.5
+
+##########################################################################
+argparse help from jason below
+##positional arguments mean that you don't have to use the options (ie "-o")
+
+parser = argparse.ArgumentParser()
+# Positional args
+parser.add_argument('r1_filename', default=None, metavar='RUN_DIR', type=str, help='Only retrieve specs for this RUN_DIR.' )
+parser.add_argument('r2_filename', default=None, metavar='RUN_DIR', type=str, help='Only retrieve specs for this RUN_DIR.' )
+parser.add_argument('i1_filename', default=None, metavar='RUN_DIR', type=str, help='Only retrieve specs for this RUN_DIR.' )
+parser.add_argument('i2_filename', default=None, metavar='RUN_DIR', type=str, help='Only retrieve specs for this RUN_DIR.' )
+# Optional args
+parser.add_argument('-u', '--search-for-very-old-samples', action='store_true', help='Search for very old Drupal/Sample IDs')
+args = parser.parse_args()
+
+EXAMPLES:
+./demultiplexing.py R1.fq R2.fq I1.fq I2.fq 
+
+args.r1_filename == "R1.fq"
+args.r2_filename == "R2.fq"
+
+# alternative
+./demultiplexing.py --r1 R1.fq --r2 R2.fq --i1 I1.fq --i2 I2.fq 
+###################################################################
+
+SOMETHING TO REMEMBER
+searching by value in a dictionary is SLOW
+while TRUE loop is recommended for opening these files and looping through them but I can't remember why--
+don't forget to loop this up
+
+pseudocode for demux algorithm for notes while writing the code!
+
+Make 1 set with forward sequence of 24 known indexes ##one set will work but I think it's better to have 2 sets-forward and revcomp
+write a function to do reverse complement 
+
+Open all 4 fastq files & read in parallel
+for nth record (meaning every record in file): ##wrote a get records function to grab each line in my files and assign to var
+
+##so filtering all of the below conditions is wayyyyy faster with if --> elifs instead of doing nested loops!! Almost 2 hours faster--THANKS TO SJ
+##ended up using elifs throughout code to filter each condition ie condition NOT meeting criteria --> write to the unknown/hopped files --> go onto next condition
+
+check if index 1 is in set
+if NOT in set 
+write R1/R4 record to unknown files R1_unknown R2_unknown
+if index 1 IS IN set ##changed strategy for this with elifs no need to do a loop/additional check for IN index set
+check if revcomp(index 2) is also in set ##changed this to be NOT IN--elif filtering
+if NOT send to unknown files corresponding to read 
+if index 2 is in set 
+check line 4 of R2/R3 records for quality score of index for Q>30 #changing this to filter out < 30
+if below cutoff write to unknown files corresponding to read
+if Q>30 then:
+check if index 1 matches revcomp(index 2) ##flipped these two last conditions
+if it's a match
+send R1/R4 record to matched files R1_matched R2_matched
+if NOT matched
+write R1/R4 record to unmatched files R1_unmatched R2_unmatched
+each time you a write out a record append index1_revcomp(index2) to each header
+
+##writing the files is easier and I think more efficient with dictionaries to hold file handles instead of np.arrays
+
+
+RUN TIME STATS--SBATCH
+	Command being timed: "/projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-third/demux.py /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz /projects/bgmp/shared/2017_sequencing/indexes.txt -o /projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-third/demultiplexed"
+	User time (seconds): 4282.94
+	System time (seconds): 44.21
+	Percent of CPU this job got: 93%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:16:52
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 286532
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 601332
+	Voluntary context switches: 34358
+	Involuntary context switches: 2846
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0 
+      IT WORKED YAY!
+
+RAN IT AGAIN FOR GRAPHS TO BE RE-FORMATTED with plt.tight_layout
+	Command being timed: "/projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-third/demux.py /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R1_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R2_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz /projects/bgmp/shared/2017_sequencing/1294_S1_L008_R3_001.fastq.gz /projects/bgmp/shared/2017_sequencing/indexes.txt -o /projects/bgmp/pgenge/bioinfo/Bi622/Demultiplex/Assignment-the-third/demultiplexed"
+	User time (seconds): 4354.50
+	System time (seconds): 44.53
+	Percent of CPU this job got: 95%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:16:31
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 286512
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 867488
+	Voluntary context switches: 32365
+	Involuntary context switches: 3376
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0

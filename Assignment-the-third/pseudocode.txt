@@ -1,0 +1,22 @@
+
+Make 1 set with forward sequence of 24 known indexes 
+write a function to do reverse complement
+
+Open all 4 fastq files & read in parallel
+for nth record (meaning every record in file): 
+        check if index 1 is in set
+            if NOT in set
+                write R1/R4 record to unknown files R1_unknown R2_unknown
+            if index 1 IS IN set
+                check if revcomp(index 2) is also in set
+                    if NOT send to unknown files corresponding to read
+                    if index 2 is in set
+                        check line 4 of R2/R3 records for quality score of index for Q>/=30
+                            if below cutoff write to unknown files corresponding to read
+                            if Q>30 then:
+                                check if index 1 matches revcomp(index 2)
+                                    if it's a match
+                                        send R1/R4 record to matched files R1_matched R2_matched
+                                    if NOT matched
+                                        write R1/R4 record to unmatched files R1_unmatched R2_unmatched
+                                    each time you a write out a record append index1_revcomp(index2) to each header
