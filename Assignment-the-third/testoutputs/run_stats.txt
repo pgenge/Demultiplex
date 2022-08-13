@@ -1,0 +1,10 @@
+Total Number of Reads:13
+Total Number of Dual Matched Reads: 2 Percent of Dual-Matched Reads: 15.384615384615385%
+Total Number of Uknown Reads:9 Percent of Uknown Reads: 69.23076923076923%
+Total Number of Unmatched Read: 2 Percent of Unmatched Reads: 15.384615384615385%
+Index_Seq	Number_of_Reads	Percentage_of_Total_Reads
+ATC	1	7.6923076923076925%
+GCG	1	7.6923076923076925%
+Index_Seq_Hopped	Number_of_Reads	Percentage_of_Total_Reads
+GCG_ATC	1	7.6923076923076925%
+ATC_GCG	1	7.6923076923076925%
